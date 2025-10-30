@@ -1,33 +1,87 @@
-ASSUME CS:CODE, DS:DATA
 DATA SEGMENT
-    LIST DW 53H, 25H, 19H, 02H
-    COUNT EQU 04
-DATA ENDS    
+    ARR DW 5324H, 1234H, 6789H, 4321H, 8765H
+    N EQU 5
+    MSG1 DB 10,13, 'BEFORE: $'
+    MSG2 DB 10,13, 'AFTER: $'
+DATA ENDS
 
 CODE SEGMENT
-START:  MOV AX, DATA
-        MOV DS, AX
-        MOV DX, COUNT-1
-    
-    
-AGAIN0: MOV CX, DX
-        MOV SI, OFFSET LIST
+ASSUME  CS:CODE, DS:DATA
 
-AGAIN1:  MOV AX, [SI]
-   
-    
-         CMP AX, [SI+2]
-         JL PR1
-         XCHG [SI+2], AX
-         XCHG [SI], AX
+START:
+    MOV AX, DATA
+    MOV DS, AX
 
+    LEA DX, MSG1
+    MOV AH, 09H
+    INT 21H
+    CALL DISPLAY_ARRAY
 
-PR1:ADD SI, 02
-    LOOP AGAIN0
-    DEC DX
-    JNZ AGAIN0
+    MOV CX, N
+    DEC CX          ; Outer loop counter (N-1 times)
+
+OUTER_LOOP:
+    MOV BX, CX
+    LEA SI, ARR
+
+INNER_LOOP:
+    MOV AX, [SI]
+    CMP AX, [SI+2]
+    JBE SKIP_SWAP
+
+    XCHG AX, [SI+2]
+    MOV [SI], AX
+
+SKIP_SWAP:
+    ADD SI, 2
+    DEC BX
+    JNZ INNER_LOOP
+    LOOP OUTER_LOOP
+
+    LEA DX, MSG2
+    MOV AH, 09H
+    INT 21H
+    CALL DISPLAY_ARRAY
+
     MOV AH, 4CH
     INT 21H
-    
+
+; ---------- PROCEDURES ----------
+DISPLAY_ARRAY PROC
+    LEA SI, ARR
+    MOV CX, N
+PRINT_NEXT:
+    MOV BX, [SI]
+    CALL PRINT_HEX
+
+    MOV DL, ' '
+    MOV AH, 02H
+    INT 21H
+
+    ADD SI, 2
+    LOOP PRINT_NEXT
+    RET
+DISPLAY_ARRAY ENDP
+
+PRINT_HEX PROC
+    PUSH CX
+    MOV CX, 4
+NEXT:
+    ROL BX, 4
+    MOV AL, BL
+    AND AL, 0FH
+    ADD AL, 30H
+    CMP AL, '9'
+    JBE DISP
+    ADD AL, 7
+DISP:
+    MOV DL, AL
+    MOV AH, 02H
+    INT 21H
+    LOOP NEXT
+    POP CX
+    RET
+PRINT_HEX ENDP
+
 CODE ENDS
-    END START
+END START
