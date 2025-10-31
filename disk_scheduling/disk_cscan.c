@@ -4,7 +4,7 @@
 
 #define MAX_REQUESTS 100
 #define UP_DIRECTION 1
-#define DOWN_DIRECTION 0 // C-SCAN typically only moves in one direction (usually UP)
+#define DOWN_DIRECTION 0 
 
 
 void sort_requests(int arr[], int n) {
@@ -74,19 +74,17 @@ void cscan_disk_scheduling(int requests[], int num_requests, int initial_head, i
             printf(" -> %d", current_position);
         }
         
-        // Move to 0 boundary
         if (current_position != 0) {
             total_seek_time += abs(0 - current_position);
             current_position = 0;
         }
         
-        // B. PHASE 2: JUMP to max_track (Wrap-Around)
+
         printf(" -> %d (Jump)", max_track);
         total_seek_time += abs(max_track - 0); 
         current_position = max_track;
         
         for (int i = num_requests; i > start_index_in_sorted; i--) {
-            // Note: We skip the initial head index itself, so we start from the end and move towards start_index_in_sorted + 1
             if (sorted_tracks[i] != initial_head) { 
                 total_seek_time += abs(sorted_tracks[i] - current_position);
                 current_position = sorted_tracks[i];
@@ -125,7 +123,6 @@ int main() {
     printf("Enter initial direction (%d for UP, %d for DOWN): ", UP_DIRECTION, DOWN_DIRECTION);
     scanf("%d", &direction);
 
-    // Run C-SCAN Algorithm
     cscan_disk_scheduling(requests, num_requests, initial_head, max_track, direction);
 
     return 0;

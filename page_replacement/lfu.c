@@ -4,14 +4,14 @@
 
 int frames[MAX_FRAMES], freq[MAX_FRAMES], count = 0;
 
-// Helper: find page index
+
 int findFrameLFU(int page, int framesize) {
     for (int i = 0; i < count; i++)
         if (frames[i] == page) return i;
     return -1;
 }
 
-// Helper: find LFU index
+
 int findLFU(int framesize) {
     int minf = freq[0], minidx = 0;
     for (int i = 1; i < framesize; i++) {

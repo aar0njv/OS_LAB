@@ -34,8 +34,7 @@ void round_robin_scheduling() {
 
     int completion[MAX_PROCESSES], waiting[MAX_PROCESSES], tat[MAX_PROCESSES];
     
-    // --- Array-Based FIFO Queue Simulation ---
-    // Stores the index (0 to n-1) of the process
+
     int ready_queue[MAX_PROCESSES * 2]; 
     int front = 0, rear = 0;
     
@@ -59,8 +58,7 @@ void round_robin_scheduling() {
 
     while (completed_count < n) {
         
-        // --- 2. CPU Idle Check ---
-        // If queue is empty (front == rear) AND not all processes are done
+       
         if (front == rear) { 
             // If we were just running, and the queue is now empty, we need to check if any process will arrive soon.
             if (was_idle == 0) {
@@ -87,8 +85,7 @@ void round_robin_scheduling() {
 
         printf("%d:P%d ", start_time, current_process_index + 1);
 
-        // --- 4. Check for New Arrivals DURING Execution ---
-        // New processes arriving up to the *new* current_time must be enqueued first.
+       
         check_and_enqueue_arrivals();
 
         // --- 5. Completion or Re-enqueue ---
